@@ -1,9 +1,10 @@
 #pragma once
 
-#include <iterator>
 #include <algorithm>
-#include <vector>
+#include <cassert>
+#include <iterator>
 #include <iostream>
+#include <vector>
 
 template <typename Type>
 class SingleLinkedList {
@@ -57,6 +58,7 @@ class SingleLinkedList {
         }
 
         BasicIterator& operator++() noexcept {
+            assert(node_ != nullptr);
             node_ = node_->next;
             return *this;
         }
@@ -68,10 +70,12 @@ class SingleLinkedList {
         }
 
         reference operator*() const noexcept {
+            assert(node_ != nullptr);
             return node_->value;
         }
 
         pointer operator->() const noexcept {
+            assert(node_ != nullptr);
             return &node_->value;
         }
 
@@ -104,12 +108,8 @@ public:
     : SingleLinkedList(values.begin(), values.end()) {
     }
 
-    SingleLinkedList(const SingleLinkedList& other) {
-        if (head_.next != other.head_.next) {
-            SingleLinkedList t(other.begin(), other.end());
-            swap(t);
-            size_ = other.size_;
-        }
+    SingleLinkedList(const SingleLinkedList& other)
+    : SingleLinkedList(other.begin(), other.end()) {
     }
 
     SingleLinkedList& operator=(const SingleLinkedList& rhs) {
@@ -142,15 +142,7 @@ public:
     }
 
     Iterator end() noexcept {
-        if (head_.next == nullptr) {
-            return Iterator();
-        }
-
-        Node* cur = head_.next;
-        while (cur != nullptr) {
-            cur = cur->next;
-        }
-        return Iterator{cur};
+        return Iterator(nullptr);
     }
 
     ConstIterator begin() const noexcept {
